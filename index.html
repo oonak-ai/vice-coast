@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>VICE COAST — Open-World 3D Action Driving</title>
+    <!-- YouTube Playables SDK MUST load before any game script -->
+    <script src="https://www.youtube.com/game_api/v1"></script>
+    <script type="module" crossorigin src="./assets/game-xpMFIhUM.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/chunk-C8dqAppj.js">
+    <link rel="modulepreload" crossorigin href="./assets/chunk-i4GS7AJL.js">
+    <link rel="modulepreload" crossorigin href="./assets/chunk-DrKApKiL.js">
+    <link rel="modulepreload" crossorigin href="./assets/chunk-toYVJmkH.js">
+    <link rel="stylesheet" crossorigin href="./assets/asset-2agIsZqZ.css">
+  </head>
+  <body>
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Live Title Splash over 3D Vice Coast Panorama -->
+    <div id="title-overlay" class="overlay-backdrop">
+      <div class="title-card">
+        <div class="title-eyebrow">FUTURE SYSTEMS LLC • YOUTUBE PLAYABLE</div>
+        <h1 class="title-logo">VICE COAST</h1>
+        <p class="title-sub">
+          Open-World Coastal Sandbox • Walk, Drive Any Car, Outrun the Heat & Rule Ocean Drive
+        </p>
+        <div class="title-actions">
+          <button id="btn-play-now" class="btn-primary btn-lg">ENTER VICE COAST</button>
+        </div>
+        <div class="title-hints">
+          <span><b>WASD / Arrows</b> Move & Drive</span>
+          <span><b>E / F</b> Enter / Exit Any Car</span>
+          <span><b>M</b> Full City Map</span>
+          <span><b>C</b> Switch Character</span>
+          <span><b>G</b> Garage</span>
+          <span><b>R</b> Vice Radio</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- In-Game HUD -->
+    <div id="hud" class="hud hidden">
+      <!-- Top Bar -->
+      <div class="hud-top">
+        <div class="hud-top-left">
+          <div class="district-pill">
+            <span id="hud-district">OCEANFRONT BOARDWALK</span>
+            <button id="btn-time-cycle" class="chip-btn" title="Switch Live Real-World / Auto / Day / Sunset / Night">
+              🌍 LIVE
+            </button>
+            <button id="btn-weather-cycle" class="chip-btn" title="Switch Dynamic Weather: Auto / Clear / Cloudy / Rain / Storm">
+              🌦 AUTO
+            </button>
+          </div>
+          <div id="hud-objective" class="objective-banner">
+            Walk up to any car [E] or enter a glowing neon beacon!
+          </div>
+          <div id="hud-timer" class="timer-pill hidden">01:30</div>
+        </div>
+
+        <div class="hud-top-right">
+          <div class="stats-row">
+            <div class="stat-pill cash-pill">
+              <span class="stat-label">CASH</span>
+              <span id="hud-cash">$2,500</span>
+            </div>
+            <div class="stat-pill score-pill">
+              <span class="stat-label">SCORE</span>
+              <span id="hud-score">0</span>
+            </div>
+            <div id="hud-wanted" class="wanted-pill hidden" aria-label="Wanted Level">
+              <span id="hud-stars">★</span>
+              <span id="hud-evade-text" class="evade-tag hidden">EVADING 12s</span>
+            </div>
+            <button id="btn-mobile-mute" class="mobile-top-btn" title="Mute / Unmute Audio">🔊</button>
+            <button id="btn-mobile-menu" class="mobile-top-btn accent" title="Open Quick Menu">☰</button>
+          </div>
+
+          <div class="action-buttons-row">
+            <button id="btn-open-garage" class="hud-btn">GARAGE</button>
+            <button id="btn-open-characters" class="hud-btn">CHARACTER</button>
+            <button id="btn-open-map" class="hud-btn">🗺 MAP</button>
+            <button id="btn-open-missions" class="hud-btn">MISSIONS</button>
+            <button id="btn-open-handling" class="hud-btn">HANDLING</button>
+            <button id="btn-open-settings" class="hud-btn">⚙ SETTINGS</button>
+            <button id="btn-toggle-mute" class="hud-btn" title="Mute / Unmute Audio">🔊</button>
+          </div>
+
+          <!-- Compact Mobile Quick-Menu Popover (collapses desktop buttons into 1 tiny ☰ icon!) -->
+          <div id="mobile-quick-drawer" class="mobile-quick-drawer hidden">
+            <div id="mobile-drawer-loc" class="mobile-drawer-loc">OCEANFRONT BOARDWALK</div>
+            <div class="mobile-drawer-grid">
+              <button class="mq-btn" data-mq="map">🗺 FULL MAP</button>
+              <button class="mq-btn" data-mq="character">👤 CHARACTER</button>
+              <button class="mq-btn" data-mq="garage">🏠 GARAGE</button>
+              <button class="mq-btn" data-mq="missions">🎯 MISSIONS</button>
+              <button class="mq-btn" data-mq="handling">🎛 HANDLING</button>
+              <button class="mq-btn" data-mq="settings">⚙ SETTINGS</button>
+              <button id="mq-btn-time" class="mq-btn" data-mq="time">🌍 LIVE</button>
+              <button id="mq-btn-weather" class="mq-btn" data-mq="weather">🌦 AUTO</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Toast & Interaction Prompt -->
+      <div id="toast-container" class="toast-container"></div>
+      <div id="interact-prompt" class="interact-prompt hidden">
+        <button id="btn-interact-car" class="interact-btn">
+          <span class="keycap">E</span>
+          <span id="interact-label">DRIVE 27 AMG GT 63 COUPE</span>
+        </button>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="hud-bottom">
+        <div id="minimap-wrap" class="minimap-wrap" role="button" tabindex="0" title="Tap or press [M] to expand Full City Map">
+          <canvas id="minimap-canvas" width="164" height="164"></canvas>
+          <span class="minimap-expand-badge" aria-hidden="true">⤢</span>
+          <div class="minimap-legend">
+            <span class="dot pink"></span>Getaway
+            <span class="dot cyan"></span>Spray
+            <span class="dot green"></span>GPS
+          </div>
+        </div>
+
+        <!-- Vehicle Telemetry & Controls -->
+        <div id="vehicle-hud" class="vehicle-hud hidden">
+          <div id="hud-combo" class="combo-pill hidden">🔥 DRIFT x1 • +$0</div>
+          <div class="vehicle-meta-row">
+            <span id="hud-car-name" class="car-name-badge">27 AMG GT 63 COUPE</span>
+            <button id="btn-cycle-radio" class="chip-btn radio-btn" title="Switch Radio Station [R]">
+              📻 VICE SYNTHWAVE FM
+            </button>
+            <button id="btn-taxi-fare" class="chip-btn taxi-btn hidden" title="Start Taxi Fare [T]">
+              🚕 START FARE [T]
+            </button>
+            <button id="btn-exit-car" class="chip-btn exit-btn">EXIT [E]</button>
+          </div>
+          <div class="speedo-panel">
+            <div class="speedo-main">
+              <span id="hud-speed">0</span>
+              <span class="speedo-unit">KM/H</span>
+            </div>
+            <div class="gear-box" id="hud-gear">1</div>
+            <div class="nitro-wrap">
+              <div class="nitro-label">NITROUS [SHIFT]</div>
+              <div class="nitro-track">
+                <div id="hud-nitro-fill" class="nitro-fill" style="width: 100%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- On-Foot Quick Bar -->
+        <div id="foot-hud" class="foot-hud">
+          <div class="foot-hint">
+            <b>WASD</b> Walk • <b>SHIFT</b> Sprint • <b>CTRL</b> Crouch • <b>SPACE</b> Jump • <b>1/2/3</b> Weapons • <b>LMB</b> Punch/Fire • <b>RMB</b> Kick/Aim • <b>H</b> Wave • <b>E</b> Enter Car
+          </div>
+        </div>
+      </div>
+
+      <!-- Full-Parity Smartphone / Touch Controls (Auto on mobile, toggleable in Settings!) -->
+      <div id="touch-controls" class="touch-controls hidden">
+        <!-- Left Thumb: Virtual Movement / Steering Joystick -->
+        <div id="touch-joystick-zone" class="touch-joy-zone" aria-label="Move or Steer Joystick">
+          <div class="touch-joy-base">
+            <div id="touch-joy-knob" class="touch-joy-knob"></div>
+          </div>
+          <div id="touch-joy-hint" class="touch-joy-hint">MOVE</div>
+        </div>
+
+        <!-- Always-Accessible Mobile Vehicle & Car-Action Shortcut Column -->
+        <div class="touch-shortcut-bar">
+          <button id="touch-btn-enter" class="touch-icon-btn car-btn" title="Enter or Exit Car">
+            <span class="ti-ico" id="touch-enter-ico">🚗</span>
+            <span class="ti-lbl" id="touch-enter-lbl">ENTER</span>
+          </button>
+          <button id="touch-btn-radio" class="touch-icon-btn radio-btn hidden" title="Switch Radio Station">
+            <span class="ti-ico">📻</span>
+            <span class="ti-lbl">RADIO</span>
+          </button>
+          <button id="touch-btn-taxi" class="touch-icon-btn taxi-btn hidden" title="Start Taxi Fare">
+            <span class="ti-ico">🚕</span>
+            <span class="ti-lbl">TAXI</span>
+          </button>
+        </div>
+
+        <!-- Right Thumb Context Pad: ON-FOOT Actions -->
+        <div id="touch-foot-pad" class="touch-right-pad">
+          <div class="touch-action-row">
+            <button id="touch-btn-punch" class="touch-circle-btn accent" aria-label="Punch">
+              <span class="tc-ico">👊</span>
+              <span class="tc-lbl">PUNCH</span>
+            </button>
+            <button id="touch-btn-kick" class="touch-circle-btn cyan" aria-label="Kick">
+              <span class="tc-ico">🦵</span>
+              <span class="tc-lbl">KICK</span>
+            </button>
+          </div>
+          <div class="touch-action-row">
+            <button id="touch-btn-sprint" class="touch-circle-btn gold" aria-label="Sprint">
+              <span class="tc-ico">🏃</span>
+              <span class="tc-lbl">RUN</span>
+            </button>
+            <button id="touch-btn-jump" class="touch-circle-btn green" aria-label="Jump">
+              <span class="tc-ico">⬆</span>
+              <span class="tc-lbl">JUMP</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Thumb Context Pad: DRIVING Controls (Full Desktop Parity!) -->
+        <div id="touch-drive-pad" class="touch-right-pad hidden">
+          <div class="touch-action-row">
+            <button id="touch-btn-drift" class="touch-circle-btn accent" aria-label="Handbrake Drift">
+              <span class="tc-ico">🛞</span>
+              <span class="tc-lbl">DRIFT</span>
+            </button>
+            <button id="touch-btn-boost" class="touch-circle-btn cyan" aria-label="Nitrous Boost">
+              <span class="tc-ico">⚡</span>
+              <span class="tc-lbl">NITRO</span>
+            </button>
+          </div>
+          <div class="touch-pedals">
+            <button id="touch-btn-brake" class="touch-pedal brake" aria-label="Brake or Reverse">
+              <span class="tp-ico">⬇</span>
+              <span>BRAKE</span>
+            </button>
+            <button id="touch-btn-gas" class="touch-pedal gas" aria-label="Gas">
+              <span class="tp-ico">⬆</span>
+              <span>GAS</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Safehouse Garage & Car Upgrades -->
+    <div id="modal-garage" class="modal-backdrop hidden">
+      <div class="modal-card modal-wide">
+        <div class="modal-header">
+          <div>
+            <h2>SAFEHOUSE GARAGE &amp; CUSTOMS</h2>
+            <p class="modal-sub">Buy, spawn beside you, respray &amp; upgrade your Vice Coast fleet</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+            <button id="btn-rewarded-cash" class="btn-reward-ad" title="Optional YouTube Playables Rewarded Ad">
+              📺 WATCH AD → +$1,500
+            </button>
+            <button class="modal-close" data-close-modal="modal-garage">✕</button>
+          </div>
+        </div>
+
+        <div class="garage-layout">
+          <div id="garage-car-list" class="garage-list"></div>
+          <div id="garage-detail" class="garage-detail"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Car Handling & Sensitivity Calibration -->
+    <div id="modal-handling" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div>
+            <h2>CAR HANDLING & SENSITIVITY</h2>
+            <p class="modal-sub">Tune steering response, drift balance & speed feel live</p>
+          </div>
+          <button class="modal-close" data-close-modal="modal-handling">✕</button>
+        </div>
+
+        <div class="preset-row">
+          <button class="preset-btn" data-preset="vice_arcade">Vice Arcade</button>
+          <button class="preset-btn" data-preset="smooth_cruiser">Smooth Cruiser</button>
+          <button class="preset-btn" data-preset="pro_drift">Pro Drift</button>
+        </div>
+
+        <div class="sliders-grid">
+          <label class="slider-item">
+            <span>Steer Sensitivity <b id="val-steerSens">0.80</b></span>
+            <input id="sl-steerSens" type="range" min="0.20" max="1.25" step="0.02" />
+          </label>
+          <label class="slider-item">
+            <span>Steer Ramp Rate <b id="val-steerRamp">3.10</b></span>
+            <input id="sl-steerRamp" type="range" min="1.5" max="7.5" step="0.1" />
+          </label>
+          <label class="slider-item">
+            <span>High-Speed Damping <b id="val-highDamp">0.68</b></span>
+            <input id="sl-highDamp" type="range" min="0.25" max="0.86" step="0.02" />
+          </label>
+          <label class="slider-item">
+            <span>Yaw Response <b id="val-yawResp">0.88</b></span>
+            <input id="sl-yawResp" type="range" min="0.55" max="1.35" step="0.02" />
+          </label>
+          <label class="slider-item">
+            <span>Drift Balance <b id="val-driftScale">0.96</b></span>
+            <input id="sl-driftScale" type="range" min="0.70" max="1.40" step="0.02" />
+          </label>
+          <label class="slider-item">
+            <span>Top Speed Scale <b id="val-speedScale">1.04</b></span>
+            <input id="sl-speedScale" type="range" min="0.85" max="1.35" step="0.02" />
+          </label>
+        </div>
+
+        <div class="modal-footer">
+          <button id="btn-reset-handling" class="btn-secondary">Reset Defaults</button>
+          <button class="btn-primary" data-close-modal="modal-handling">Save & Resume</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Missions, Audio & World Options -->
+    <div id="modal-missions" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div>
+            <h2>VICE COAST CONTRACTS & SETTINGS</h2>
+            <p class="modal-sub">Jump into open-world action or tune audio & time of day</p>
+          </div>
+          <button class="modal-close" data-close-modal="modal-missions">✕</button>
+        </div>
+
+        <div class="mission-cards">
+          <div class="mission-item">
+            <div>
+              <h3 class="pink-text">NEON GETAWAY CONTRACT</h3>
+              <p>Grab the VIP briefcase at Downtown Plaza, shake 2★ Police & deliver to Starfish Key Marina. Reward: <b>$2,500+</b></p>
+            </div>
+            <button id="btn-start-getaway" class="btn-primary">START</button>
+          </div>
+
+          <div class="mission-item">
+            <div>
+              <h3 class="cyan-text">BOARDWALK CHECKPOINT SPRINT</h3>
+              <p>9-checkpoint high-speed coastal race over Coral Causeway & Starfish Key Island. Reward: <b>$2,000+</b></p>
+            </div>
+            <button id="btn-start-sprint" class="btn-primary">START</button>
+          </div>
+
+          <div class="mission-item">
+            <div>
+              <h3 class="gold-text">STARFISH ISLAND GRAND CIRCUIT</h3>
+              <p>11-gate high-speed coastal loop across Coral Causeway, Lighthouse Point &amp; South Harbor Bridge. Reward: <b>$3,200+</b></p>
+            </div>
+            <button id="btn-start-circuit" class="btn-primary">START</button>
+          </div>
+
+          <div class="mission-item">
+            <div>
+              <h3 class="gold-text">FREE ROAM &amp; SIDE HUSTLES</h3>
+              <p>Drive through <b>Pay-n-Paint</b> to lose Wanted Stars, hit <b>Stunt Ramps</b> &amp; chain <b>Drift Combos</b>, collect 14 Neon Palms, or drive a <b>Checker Cab [T]</b> for Taxi Fares!</p>
+            </div>
+            <button id="btn-cancel-mission" class="btn-secondary">FREE ROAM</button>
+          </div>
+        </div>
+
+        <div class="settings-divider">GRAPHICS &amp; PERFORMANCE (GPU AUTO-CONFIG)</div>
+        <div class="gpu-banner">
+          <div>
+            <div class="toggle-title">
+              Detected GPU: <span id="gfx-gpu-name" class="cyan-text">Detecting...</span>
+            </div>
+            <div class="toggle-sub" id="gfx-tier-reason">
+              Automatically calibrated on first launch — adjust freely below
+            </div>
+          </div>
+          <div class="gpu-banner-right">
+            <span id="gfx-fps-badge" class="fps-badge">-- FPS</span>
+            <button id="btn-gfx-autodetect" class="preset-btn" title="Re-detect GPU &amp; apply recommended settings">
+              🔍 Auto-Detect
+            </button>
+          </div>
+        </div>
+
+        <div class="preset-row" style="margin-bottom: 10px">
+          <button class="preset-btn gfx-preset-btn" data-gfx-preset="low">LOW (Fastest)</button>
+          <button class="preset-btn gfx-preset-btn" data-gfx-preset="medium">MEDIUM</button>
+          <button class="preset-btn gfx-preset-btn" data-gfx-preset="high">HIGH</button>
+          <button class="preset-btn gfx-preset-btn" data-gfx-preset="ultra">ULTRA</button>
+        </div>
+
+        <div class="sliders-grid">
+          <label class="slider-item">
+            <span>Render Distance <b id="val-renderDist">850m</b></span>
+            <input id="sl-renderDist" type="range" min="180" max="1200" step="20" value="850" />
+          </label>
+          <label class="slider-item">
+            <span>Resolution Scale <b id="val-resScale">100%</b></span>
+            <input id="sl-resScale" type="range" min="0.5" max="1.0" step="0.05" value="1.0" />
+          </label>
+          <label class="slider-item">
+            <span>3D Grass &amp; Foliage <b id="val-foliageQuality">HIGH</b></span>
+            <select id="sel-foliageQuality" class="gfx-select">
+              <option value="off">Off (Max FPS)</option>
+              <option value="low">Low (No 3D Grass)</option>
+              <option value="medium">Medium (50% Grass)</option>
+              <option value="high">High (Full Lush)</option>
+            </select>
+          </label>
+          <label class="slider-item">
+            <span>Traffic &amp; Crowd Density <b id="val-trafficDensity">HIGH</b></span>
+            <select id="sel-trafficDensity" class="gfx-select">
+              <option value="low">Low (50% Traffic)</option>
+              <option value="medium">Medium (75% Traffic)</option>
+              <option value="high">High (Full City)</option>
+            </select>
+          </label>
+          <label class="slider-item">
+            <span>Weather &amp; Rain Detail <b id="val-weatherDetail">HIGH</b></span>
+            <select id="sel-weatherDetail" class="gfx-select">
+              <option value="low">Low (Light Rain)</option>
+              <option value="high">High (Full Storm)</option>
+            </select>
+          </label>
+          <label class="slider-item">
+            <span>Street Glow &amp; Prop Detail <b id="val-streetDetail">ON</b></span>
+            <select id="sel-streetDetail" class="gfx-select">
+              <option value="on">On (Full Glows)</option>
+              <option value="off">Off (GPU Saver)</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="settings-divider">TIME OF DAY &amp; REAL-WORLD TIMEZONE SYNC</div>
+        <div class="settings-toggle-row">
+          <div>
+            <div class="toggle-title">Auto Real-World Timezone Sync</div>
+            <div class="toggle-sub" id="settings-tz-info">
+              Syncs in-game clock &amp; solar angle to your real local timezone
+            </div>
+          </div>
+          <label class="switch">
+            <input id="chk-live-time-sync" type="checkbox" checked />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div id="manual-time-panel" class="manual-time-panel">
+          <div class="preset-row" style="margin-bottom: 10px">
+            <button class="preset-btn time-preset-btn" data-hour="6.5">🌅 Dawn</button>
+            <button class="preset-btn time-preset-btn" data-hour="13.0">☀ Noon</button>
+            <button class="preset-btn time-preset-btn" data-hour="18.4">🌇 Sunset</button>
+            <button class="preset-btn time-preset-btn" data-hour="22.5">🌙 Night</button>
+            <button id="btn-time-fast-cycle" class="preset-btn">⏩ Fast 24h</button>
+          </div>
+          <label class="slider-item">
+            <span>Manual Time of Day <b id="val-manualHour">13:30</b></span>
+            <input id="sl-manualHour" type="range" min="0" max="23.75" step="0.25" value="13.5" />
+          </label>
+        </div>
+
+        <div class="settings-divider">CONTROLS, AUDIO &amp; ATMOSPHERE</div>
+        <div class="sliders-grid">
+          <label class="slider-item">
+            <span>Radio / Music Volume <b id="val-musicVol">65%</b></span>
+            <input id="sl-musicVol" type="range" min="0" max="1" step="0.05" />
+          </label>
+          <label class="slider-item">
+            <span>Engine &amp; SFX Volume <b id="val-sfxVol">85%</b></span>
+            <input id="sl-sfxVol" type="range" min="0" max="1" step="0.05" />
+          </label>
+          <label class="slider-item">
+            <span>Mobile Touch Controls <b id="val-touchMode">AUTO</b></span>
+            <select id="sel-touchMode" class="gfx-select">
+              <option value="auto">Auto (Smartphones &amp; Tablets)</option>
+              <option value="on">Always On (Preview / Touch PC)</option>
+              <option value="off">Off (Keyboard &amp; Mouse Only)</option>
+            </select>
+          </label>
+          <div class="slider-item" style="justify-content: center">
+            <span>Optional Reward Boost</span>
+            <button id="btn-rewarded-heat" class="btn-reward-ad" style="margin-top: 4px; width: 100%">
+              📺 WATCH AD → CLEAR HEAT + $500
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="btn-clear-heat-debug" class="btn-secondary">Teleport to Ocean Drive</button>
+          <button class="btn-primary" data-close-modal="modal-missions">Back to Street</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GTA-Style Playable Character Switcher Modal -->
+    <div id="modal-characters" class="modal-backdrop hidden">
+      <div class="modal-card modal-wide">
+        <div class="modal-header">
+          <div>
+            <h2>VICE COAST CREW — SELECT CHARACTER</h2>
+            <p>Switch playable characters live anytime — each with unique style, build &amp; gear</p>
+          </div>
+          <button class="modal-close" data-close-modal="modal-characters">✕</button>
+        </div>
+        <div id="character-grid" class="character-grid"></div>
+        <div class="modal-footer">
+          <span id="active-character-summary" class="char-footer-note">Active: Maya Vance</span>
+          <button class="btn-primary" data-close-modal="modal-characters">Back to Street</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expandable Full-Screen Interactive City Map Modal -->
+    <div id="modal-map" class="modal-backdrop hidden">
+      <div class="modal-card map-modal-card">
+        <div class="modal-header map-modal-header">
+          <div>
+            <h2>VICE COAST — INTERACTIVE CITY MAP</h2>
+            <p id="map-waypoint-status">Tap or click anywhere on the map to set a GPS Waypoint • Drag to pan</p>
+          </div>
+          <button class="modal-close" data-close-modal="modal-map">✕</button>
+        </div>
+
+        <div class="map-canvas-wrap">
+          <canvas id="world-map-canvas" width="960" height="620"></canvas>
+          <div class="map-zoom-controls">
+            <button id="btn-map-zoom-in" class="map-ctrl-btn" title="Zoom In">＋</button>
+            <button id="btn-map-zoom-out" class="map-ctrl-btn" title="Zoom Out">－</button>
+            <button id="btn-map-center" class="map-ctrl-btn" title="Center on Player">◎</button>
+            <button id="btn-map-fit" class="map-ctrl-btn" title="Fit Whole City">⊞</button>
+            <button id="btn-map-clear-wp" class="map-ctrl-btn warn" title="Clear GPS Waypoint">✕ GPS</button>
+          </div>
+        </div>
+
+        <div class="map-legend-bar">
+          <span><i class="map-dot player"></i>You</span>
+          <span><i class="map-dot gps"></i>GPS Waypoint</span>
+          <span><i class="map-dot spray"></i>Pay-N-Paint</span>
+          <span><i class="map-dot mission"></i>Missions</span>
+          <span><i class="map-dot ramp"></i>Stunt Ramps</span>
+          <span><i class="map-dot car"></i>Parked Cars</span>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
