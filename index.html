@@ -9,12 +9,12 @@
     <title>VICE COAST — Open-World 3D Action Driving</title>
     <!-- YouTube Playables SDK MUST load before any game script -->
     <script src="https://www.youtube.com/game_api/v1"></script>
-    <script type="module" crossorigin src="./assets/game-BTkApIha.js"></script>
+    <script type="module" crossorigin src="./assets/game-8kM8lwym.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/chunk-BniEh8u7.js">
     <link rel="modulepreload" crossorigin href="./assets/chunk-DF7DoNH5.js">
     <link rel="modulepreload" crossorigin href="./assets/chunk-CKiCOz8M.js">
     <link rel="modulepreload" crossorigin href="./assets/chunk-BOfcZDV-.js">
-    <link rel="stylesheet" crossorigin href="./assets/asset-Cw-ayavY.css">
+    <link rel="stylesheet" crossorigin href="./assets/asset-CU7Q1K_Z.css">
   </head>
   <body>
     <canvas id="game-canvas"></canvas>
@@ -29,15 +29,16 @@
         </p>
         <div class="title-actions">
           <button id="btn-play-now" class="btn-primary btn-lg">ENTER VICE COAST</button>
+          <button id="btn-title-controls" class="btn-secondary btn-lg">⌨ CONTROLS &amp; SHORTCUTS</button>
         </div>
         <div class="title-hints">
-          <span><b>WASD / Arrows</b> Move & Drive</span>
+          <span><b>WASD / Arrows</b> Move &amp; Drive</span>
           <span><b>E / F</b> Enter / Exit Any Car</span>
+          <span><b>V</b> Camera View (3 Modes)</span>
           <span><b>M</b> Full City Map</span>
           <span><b>C</b> Switch Character</span>
-          <span><b>V</b> Camera View (3 Modes)</span>
           <span><b>G</b> Garage</span>
-          <span><b>R</b> Vice Radio</span>
+          <span><b>? / F1</b> All Shortcuts</span>
         </div>
       </div>
     </div>
@@ -86,6 +87,7 @@
             <button id="btn-open-map" class="hud-btn">🗺 MAP</button>
             <button id="btn-open-missions" class="hud-btn">MISSIONS</button>
             <button id="btn-open-handling" class="hud-btn">HANDLING</button>
+            <button id="btn-open-controls" class="hud-btn" title="All Keyboard &amp; Mouse Shortcuts [? / F1]">⌨ KEYS</button>
             <button id="btn-open-settings" class="hud-btn">⚙ SETTINGS</button>
             <button id="btn-toggle-mute" class="hud-btn" title="Mute / Unmute Audio">🔊</button>
           </div>
@@ -99,6 +101,7 @@
               <button class="mq-btn" data-mq="garage">🏠 GARAGE</button>
               <button class="mq-btn" data-mq="missions">🎯 MISSIONS</button>
               <button class="mq-btn" data-mq="handling">🎛 HANDLING</button>
+              <button class="mq-btn" data-mq="controls">⌨ SHORTCUTS</button>
               <button class="mq-btn" data-mq="settings">⚙ SETTINGS</button>
               <button id="mq-btn-time" class="mq-btn" data-mq="time">🌍 LIVE</button>
               <button id="mq-btn-weather" class="mq-btn" data-mq="weather">🌦 AUTO</button>
@@ -542,6 +545,79 @@
           <span><i class="map-dot mission"></i>Missions</span>
           <span><i class="map-dot ramp"></i>Stunt Ramps</span>
           <span><i class="map-dot car" style="background:#f59e0b;"></i>Landmarks &amp; Parks</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Complete Controls & Keyboard Shortcuts Reference Page -->
+    <div id="modal-controls" class="modal-backdrop hidden">
+      <div class="modal-card modal-wide">
+        <div class="modal-header">
+          <div>
+            <h2>CONTROLS &amp; KEYBOARD SHORTCUTS</h2>
+            <p>All driving, camera, combat, city map &amp; quick-menu shortcuts • Press <b>?</b> or <b>F1</b> anytime</p>
+          </div>
+          <button class="modal-close" data-close-modal="modal-controls">✕</button>
+        </div>
+
+        <div class="shortcuts-grid">
+          <section class="shortcut-group">
+            <h3 class="sg-title cyan">🚗 DRIVING &amp; CAMERA</h3>
+            <ul class="shortcut-list">
+              <li><span class="sk-keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / <kbd>↑↓←→</kbd></span><span class="sk-desc">Drive, Brake / Reverse &amp; Steer</span></li>
+              <li><span class="sk-keys"><kbd>SPACE</kbd></span><span class="sk-desc">Handbrake / Drift</span></li>
+              <li><span class="sk-keys"><kbd>SHIFT</kbd></span><span class="sk-desc">Nitrous Boost</span></li>
+              <li><span class="sk-keys"><kbd>E</kbd> / <kbd>F</kbd></span><span class="sk-desc">Enter / Exit Any Car</span></li>
+              <li><span class="sk-keys"><kbd>V</kbd></span><span class="sk-desc">Switch Camera (Chase Near / Far / Driver View)</span></li>
+              <li><span class="sk-keys"><kbd>L</kbd></span><span class="sk-desc">High-Beam Headlights</span></li>
+              <li><span class="sk-keys"><kbd>H</kbd></span><span class="sk-desc">Hazard Lights</span></li>
+              <li><span class="sk-keys"><kbd>R</kbd></span><span class="sk-desc">Switch Vice Radio Station</span></li>
+              <li><span class="sk-keys"><kbd>T</kbd></span><span class="sk-desc">Start Taxi Fare (in Taxi Cab)</span></li>
+              <li><span class="sk-keys"><kbd>DRAG</kbd></span><span class="sk-desc">Orbit Camera Around Car</span></li>
+            </ul>
+          </section>
+
+          <section class="shortcut-group">
+            <h3 class="sg-title pink">🏃 ON-FOOT &amp; COMBAT</h3>
+            <ul class="shortcut-list">
+              <li><span class="sk-keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / <kbd>↑↓←→</kbd></span><span class="sk-desc">Walk &amp; Strafe</span></li>
+              <li><span class="sk-keys"><kbd>SHIFT</kbd></span><span class="sk-desc">Sprint</span></li>
+              <li><span class="sk-keys"><kbd>SPACE</kbd></span><span class="sk-desc">Jump</span></li>
+              <li><span class="sk-keys"><kbd>MOUSE</kbd></span><span class="sk-desc">Free Look (Click World • <kbd>ESC</kbd> to Free)</span></li>
+              <li><span class="sk-keys"><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></span><span class="sk-desc">Equip Unarmed / Pistol / Rifle</span></li>
+              <li><span class="sk-keys"><kbd>LMB</kbd> / <kbd>Q</kbd> / <kbd>J</kbd></span><span class="sk-desc">Punch / Fire Weapon</span></li>
+              <li><span class="sk-keys"><kbd>RMB</kbd> / <kbd>K</kbd></span><span class="sk-desc">Kick / Hold to Aim Weapon</span></li>
+              <li><span class="sk-keys"><kbd>R</kbd></span><span class="sk-desc">Reload Weapon (when armed)</span></li>
+              <li><span class="sk-keys"><kbd>H</kbd></span><span class="sk-desc">Wave Emote</span></li>
+            </ul>
+          </section>
+
+          <section class="shortcut-group">
+            <h3 class="sg-title gold">🗺 CITY MAP &amp; MENUS</h3>
+            <ul class="shortcut-list">
+              <li><span class="sk-keys"><kbd>M</kbd></span><span class="sk-desc">Open / Close Full 18 km City Map</span></li>
+              <li><span class="sk-keys"><kbd>MAP CLICK</kbd></span><span class="sk-desc">Set GPS Waypoint (Double-Click or <b>⚡ TP</b> to Teleport)</span></li>
+              <li><span class="sk-keys"><kbd>G</kbd></span><span class="sk-desc">Open Safehouse Garage &amp; Customs</span></li>
+              <li><span class="sk-keys"><kbd>C</kbd></span><span class="sk-desc">Switch Playable Character</span></li>
+              <li><span class="sk-keys"><kbd>?</kbd> / <kbd>F1</kbd></span><span class="sk-desc">Open / Close This Shortcuts Page</span></li>
+              <li><span class="sk-keys"><kbd>ESC</kbd></span><span class="sk-desc">Pause / Settings / Close Menu</span></li>
+            </ul>
+          </section>
+
+          <section class="shortcut-group">
+            <h3 class="sg-title purple">💡 PRO TIPS &amp; TOUCH</h3>
+            <ul class="shortcut-list tips-list">
+              <li><span class="sk-tip-dot">📷</span><span class="sk-desc">In any car, click <b>📷 CHASE NEAR [V]</b> or press <kbd>V</kbd> to toggle Chase Near, Chase Far &amp; unobstructed Driver View.</span></li>
+              <li><span class="sk-tip-dot">🎨</span><span class="sk-desc">Drive through glowing cyan <b>Pay-N-Paint</b> bays to clear Police Heat and respray your ride.</span></li>
+              <li><span class="sk-tip-dot">🌉</span><span class="sk-desc">Explore 2-floor &amp; 3-floor elevated curved skyways, 14 bespoke city landmarks &amp; coastal bridges.</span></li>
+              <li><span class="sk-tip-dot">📱</span><span class="sk-desc">Mobile touch controls activate automatically on phones/tablets — or force them on in <b>⚙ SETTINGS</b>.</span></li>
+            </ul>
+          </section>
+        </div>
+
+        <div class="modal-footer">
+          <span class="char-footer-note">Tip: Press <b>?</b> or <b>F1</b> anytime to view shortcuts</span>
+          <button class="btn-primary" data-close-modal="modal-controls">Got It — Back to Game</button>
         </div>
       </div>
     </div>
