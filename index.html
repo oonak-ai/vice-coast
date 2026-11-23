@@ -9,12 +9,12 @@
     <title>VICE COAST — Open-World 3D Action Driving</title>
     <!-- YouTube Playables SDK MUST load before any game script -->
     <script src="https://www.youtube.com/game_api/v1"></script>
-    <script type="module" crossorigin src="./assets/game-DZ6gwbaw.js"></script>
+    <script type="module" crossorigin src="./assets/game-dyG2SeZv.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/chunk-BniEh8u7.js">
     <link rel="modulepreload" crossorigin href="./assets/chunk-DF7DoNH5.js">
     <link rel="modulepreload" crossorigin href="./assets/chunk-CL5-w382.js">
     <link rel="modulepreload" crossorigin href="./assets/chunk-CWi_QNGN.js">
-    <link rel="stylesheet" crossorigin href="./assets/asset-C29mfgO5.css">
+    <link rel="stylesheet" crossorigin href="./assets/asset-BNB_LX_2.css">
   </head>
   <body>
     <canvas id="game-canvas"></canvas>
@@ -28,9 +28,10 @@
           Open-World Coastal Sandbox • Walk, Drive Any Car, Outrun the Heat & Rule Ocean Drive
         </p>
         <div class="title-actions">
-          <button id="btn-play-now" class="btn-primary btn-lg">ENTER VICE COAST</button>
-          <button id="btn-title-controls" class="btn-secondary btn-lg">⌨ CONTROLS &amp; SHORTCUTS</button>
+          <button id="btn-play-now" type="button" class="btn-primary btn-lg">LOADING VICE COAST...</button>
+          <button id="btn-title-controls" type="button" class="btn-secondary btn-lg">⌨ CONTROLS &amp; SHORTCUTS</button>
         </div>
+        <div id="title-boot-status" style="margin-top:10px;font-size:12px;color:#67e8f9;min-height:16px;"></div>
         <div class="title-hints">
           <span><b>WASD / Arrows</b> Move &amp; Drive</span>
           <span><b>E / F</b> Enter / Exit Any Car</span>
@@ -42,6 +43,27 @@
         </div>
       </div>
     </div>
+    <script>
+      (function () {
+        var btn = document.getElementById('btn-play-now');
+        var statusEl = document.getElementById('title-boot-status');
+        if (!btn) return;
+        function queueEarlyEnter() {
+          if (window.__viceReady) return;
+          window.__vicePendingEnter = true;
+          btn.textContent = 'ENTERING VICE COAST...';
+          if (statusEl) statusEl.textContent = 'Loading 3D city — entering automatically as soon as ready...';
+        }
+        btn.addEventListener('click', queueEarlyEnter);
+        btn.addEventListener('touchend', queueEarlyEnter, { passive: true });
+        window.addEventListener('error', function (ev) {
+          if (!window.__viceReady && statusEl) {
+            statusEl.style.color = '#fda4af';
+            statusEl.textContent = 'Startup issue: ' + (ev && ev.message ? ev.message : 'Check WebGL / refresh page.');
+          }
+        });
+      })();
+    </script>
 
     <!-- In-Game HUD -->
     <div id="hud" class="hud hidden">
