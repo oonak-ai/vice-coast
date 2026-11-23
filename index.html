@@ -9,12 +9,12 @@
     <title>VICE COAST — Open-World 3D Action Driving</title>
     <!-- YouTube Playables SDK MUST load before any game script -->
     <script src="https://www.youtube.com/game_api/v1"></script>
-    <script type="module" crossorigin src="./assets/game-2ENJeiHv.js"></script>
+    <script type="module" crossorigin src="./assets/game-BTkApIha.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/chunk-BniEh8u7.js">
     <link rel="modulepreload" crossorigin href="./assets/chunk-DF7DoNH5.js">
     <link rel="modulepreload" crossorigin href="./assets/chunk-CKiCOz8M.js">
     <link rel="modulepreload" crossorigin href="./assets/chunk-BOfcZDV-.js">
-    <link rel="stylesheet" crossorigin href="./assets/asset-2agIsZqZ.css">
+    <link rel="stylesheet" crossorigin href="./assets/asset-Cw-ayavY.css">
   </head>
   <body>
     <canvas id="game-canvas"></canvas>
@@ -35,6 +35,7 @@
           <span><b>E / F</b> Enter / Exit Any Car</span>
           <span><b>M</b> Full City Map</span>
           <span><b>C</b> Switch Character</span>
+          <span><b>V</b> Camera View (3 Modes)</span>
           <span><b>G</b> Garage</span>
           <span><b>R</b> Vice Radio</span>
         </div>
@@ -132,6 +133,9 @@
           <div id="hud-combo" class="combo-pill hidden">🔥 DRIFT x1 • +$0</div>
           <div class="vehicle-meta-row">
             <span id="hud-car-name" class="car-name-badge">27 AMG GT 63 COUPE</span>
+            <button id="btn-cycle-camera" class="chip-btn cam-btn" title="Switch Camera View [V]">
+              📷 CHASE NEAR [V]
+            </button>
             <button id="btn-cycle-radio" class="chip-btn radio-btn" title="Switch Radio Station [R]">
               📻 VICE SYNTHWAVE FM
             </button>
@@ -178,6 +182,10 @@
           <button id="touch-btn-enter" class="touch-icon-btn car-btn" title="Enter or Exit Car">
             <span class="ti-ico" id="touch-enter-ico">🚗</span>
             <span class="ti-lbl" id="touch-enter-lbl">ENTER</span>
+          </button>
+          <button id="touch-btn-camera" class="touch-icon-btn cam-btn hidden" title="Switch Camera View">
+            <span class="ti-ico">📷</span>
+            <span class="ti-lbl" id="touch-cam-lbl">NEAR</span>
           </button>
           <button id="touch-btn-radio" class="touch-icon-btn radio-btn hidden" title="Switch Radio Station">
             <span class="ti-ico">📻</span>
